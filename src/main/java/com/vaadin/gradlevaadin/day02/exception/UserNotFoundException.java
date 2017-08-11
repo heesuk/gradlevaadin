@@ -1,4 +1,4 @@
-package com.vaadin.gradlevaadin.day02.repository;
+package com.vaadin.gradlevaadin.day02.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {

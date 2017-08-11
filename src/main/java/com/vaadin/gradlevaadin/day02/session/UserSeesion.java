@@ -1,23 +1,24 @@
 package com.vaadin.gradlevaadin.day02.session;
 
-import java.io.Serializable;
-
 import com.vaadin.gradlevaadin.day02.entity.UserInfo;
-import com.vaadin.gradlevaadin.day02.repository.UserNotFoundException;
-import com.vaadin.server.WrappedSession;
+import com.vaadin.gradlevaadin.day02.exception.UserNotFoundException;
+import com.vaadin.gradlevaadin.day02.repository.UserInfoRepository;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
+import com.vaadin.server.WrappedSession;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
 
 import static com.vaadin.server.Page.getCurrent;
 
+@Component
+@Slf4j
 public class UserSeesion implements Serializable {
-    private static UserSeesion INSTANCE = null;
-
-    /*public UserSeesion() {
-        if (INSTANCE == null) {
-            INSTANCE = new UserSeesion();
-        }
-    }*/
+    @Autowired
+    private UserInfoRepository userInfoRepository;
 
 
     public static final String SESSION_KEY = UserSeesion.class.getCanonicalName();
@@ -25,6 +26,7 @@ public class UserSeesion implements Serializable {
     // 현재 세션 사용자 정보 가져오기
     public static UserInfo getUser() {
         UserInfo userInfo = (UserInfo) getCurrentSession().getAttribute(SESSION_KEY);
+
         return userInfo;
     }
 
@@ -41,8 +43,8 @@ public class UserSeesion implements Serializable {
     }
 
     public void signIn(String userId, String password) {
-        UserInfo userInfo = new UserInfo(userId, password);       // find user data
-        if (userInfo.getUserId()==null) {
+        UserInfo userInfo = userInfoRepository.findByUserIdAndPassword(userId, password);   // find user
+        if (userInfo == null || userInfo.getUserId()==null) {
             throw new UserNotFoundException("user not found");
         }
 
@@ -54,6 +56,14 @@ public class UserSeesion implements Serializable {
         getCurrent().reload();
     }
 
+    public void modifyPassword(String userId, String modifypassword) {
+        UserInfo userInfo = userInfoRepository.findByUserId(userId);
+        userInfo.setPassword(modifypassword);
+        userInfoRepository.save(userInfo);
+
+        com.vaadin.ui.Notification.show("재로그인 하세요 ");
+        signout();
+    }
     private static WrappedSession getCurrentSession() {
         VaadinRequest request = VaadinService.getCurrentRequest();
         if (request == null) {

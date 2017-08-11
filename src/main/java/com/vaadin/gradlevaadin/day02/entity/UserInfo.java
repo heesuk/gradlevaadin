@@ -1,17 +1,38 @@
 package com.vaadin.gradlevaadin.day02.entity;
 
 import com.vaadin.gradlevaadin.day02.constant.RoleTypeEnum;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "userinfo")
 public class UserInfo {
+    @Column(name = "userid")
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Getter @Setter
     private String userId;
+    @Column(name = "username")
+    @Getter@Setter
     private String username;
+    @Column(name = "usernickname")
+    @Getter@Setter
     private String userNickname;
+    @Column(name = "password")
+    @Getter@Setter
     private String password;
+
+    @Getter@Setter
     private RoleTypeEnum role;
 
     public UserInfo() {
         this.role = RoleTypeEnum.User;
     }
+
     public UserInfo(UserInfo user) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
@@ -23,45 +44,5 @@ public class UserInfo {
         this.userId = userid;
         this.password = password;
         this.role = RoleTypeEnum.User;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUserNickname() {
-        return userNickname;
-    }
-
-    public void setUserNickname(String userNickname) {
-        this.userNickname = userNickname;
-    }
-
-    public RoleTypeEnum getRole() {
-        return role;
-    }
-    public void setRole(RoleTypeEnum role) {
-        this.role = role;
     }
 }

@@ -1,6 +1,10 @@
 package com.vaadin.gradlevaadin.day02.components;
 
+import com.vaadin.annotations.Theme;
+import com.vaadin.gradlevaadin.day02.exception.UserNotFoundException;
 import com.vaadin.gradlevaadin.day02.session.UserSeesion;
+import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
@@ -14,11 +18,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Notification;
 import com.vaadin.server.FontAwesome;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@SpringComponent
 public class LoginComponent extends VerticalLayout {
+    @Autowired
     UserSeesion userSeesion;
+
+    Label errorLabel;
     public LoginComponent() {
-        userSeesion = new UserSeesion();
+//        userSeesion = new UserSeesion();
         setSizeFull();
         Component loginForm = buildForm();
         addComponent(loginForm);
@@ -39,7 +48,16 @@ public class LoginComponent extends VerticalLayout {
         Label titleLabel = new Label("Welcome to vaadin seminar");
         titleLabel.addStyleName(ValoTheme.LABEL_H4);
         titleLabel.addStyleName(ValoTheme.LABEL_COLORED);
-        return titleLabel;
+
+        // error label
+        errorLabel = new Label();
+        errorLabel.addStyleName(ValoTheme.LABEL_FAILURE);
+        errorLabel.setVisible(false);
+
+        VerticalLayout labels = new VerticalLayout();
+        labels.addComponents(titleLabel, errorLabel);
+
+        return labels;
     }
     private Component buildFields() {
         final TextField id = new TextField("UserID");
@@ -67,9 +85,10 @@ public class LoginComponent extends VerticalLayout {
     private void signIn(String id, String password) {
         try {
             userSeesion.signIn(id, password);
-            Notification.show("success");
-        } catch (Exception e) {
-            Notification.show("error");
+            Page.getCurrent().reload();
+        } catch (UserNotFoundException e) {
+            errorLabel.setValue(String.format("Login Failed : %s", e.getMessage()));
+            errorLabel.setVisible(true);
         }
     }
 }
