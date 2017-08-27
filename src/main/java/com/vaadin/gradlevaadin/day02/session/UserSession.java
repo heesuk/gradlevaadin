@@ -1,17 +1,20 @@
 package com.vaadin.gradlevaadin.day02.session;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import com.apple.eawt.AppEvent;
 import com.vaadin.gradlevaadin.day02.entity.UserInfo;
-import com.vaadin.gradlevaadin.day02.repository.UserNotFoundException;
+import com.vaadin.gradlevaadin.day02.exception.UserNotFoundException;
+import com.vaadin.gradlevaadin.day02.repository.UserDataRepository;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 
 import static com.vaadin.server.Page.getCurrent;
 
-public class UserSeesion implements Serializable {
-    private static UserSeesion INSTANCE = null;
+public class UserSession implements Serializable {
+//    private static UserSeesion INSTANCE = null;
 
     /*public UserSeesion() {
         if (INSTANCE == null) {
@@ -20,7 +23,12 @@ public class UserSeesion implements Serializable {
     }*/
 
 
-    public static final String SESSION_KEY = UserSeesion.class.getCanonicalName();
+    public static final String SESSION_KEY = UserSession.class.getCanonicalName();
+
+    private UserDataRepository userDataRepository;
+    public UserSession() {
+        this.userDataRepository = UserDataRepository.getInstance();
+    }
 
     // 현재 세션 사용자 정보 가져오기
     public static UserInfo getUser() {
@@ -40,8 +48,8 @@ public class UserSeesion implements Serializable {
         return getUser() != null;
     }
 
-    public void signIn(String userId, String password) {
-        UserInfo userInfo = new UserInfo(userId, password);       // find user data
+    public void signIn(String userName, String password) {
+        UserInfo userInfo = userDataRepository.findByUserNameAndPassword(userName, password);
         if (userInfo.getUserId()==null) {
             throw new UserNotFoundException("user not found");
         }

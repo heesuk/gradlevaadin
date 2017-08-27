@@ -3,7 +3,7 @@ package com.vaadin.gradlevaadin.day02.entity;
 import com.vaadin.gradlevaadin.day02.constant.RoleTypeEnum;
 
 public class UserInfo {
-    private String userId;
+    private Long userId;
     private String username;
     private String userNickname;
     private String password;
@@ -19,17 +19,24 @@ public class UserInfo {
         this.password = user.getPassword();
         this.role = user.getRole();
     }
-    public UserInfo(String userid, String password) {
-        this.userId = userid;
+    public UserInfo(String username, String password) {
+        this.username = username;
         this.password = password;
         this.role = RoleTypeEnum.User;
     }
 
-    public String getUserId() {
+    public UserInfo(String username, String password, String userNickname, RoleTypeEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.userNickname = userNickname;
+    }
+
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

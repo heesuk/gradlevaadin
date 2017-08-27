@@ -1,24 +1,18 @@
 package com.vaadin.gradlevaadin.day02.components;
 
-import com.vaadin.gradlevaadin.day02.session.UserSeesion;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.Button;
 import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.Notification;
+import com.vaadin.gradlevaadin.day02.session.UserSession;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class LoginComponent extends VerticalLayout {
-    UserSeesion userSeesion;
+    UserSession userSession;
+    Label errorLabel ;
+
     public LoginComponent() {
-        userSeesion = new UserSeesion();
+        userSession = new UserSession();
         setSizeFull();
         Component loginForm = buildForm();
         addComponent(loginForm);
@@ -39,7 +33,15 @@ public class LoginComponent extends VerticalLayout {
         Label titleLabel = new Label("Welcome to vaadin seminar");
         titleLabel.addStyleName(ValoTheme.LABEL_H4);
         titleLabel.addStyleName(ValoTheme.LABEL_COLORED);
-        return titleLabel;
+
+        errorLabel = new Label();
+        errorLabel.addStyleName(ValoTheme.LABEL_FAILURE);
+        errorLabel.setVisible(false);
+
+        final VerticalLayout labels = new VerticalLayout();
+        labels.addComponent(titleLabel);
+        labels.addComponent(errorLabel);
+        return labels;
     }
     private Component buildFields() {
         final TextField id = new TextField("UserID");
@@ -66,10 +68,13 @@ public class LoginComponent extends VerticalLayout {
     }
     private void signIn(String id, String password) {
         try {
-            userSeesion.signIn(id, password);
-            Notification.show("success");
+            userSession.signIn(id, password);
+            Page.getCurrent().reload();
+//            Notification.show("success");
         } catch (Exception e) {
-            Notification.show("error");
+//            Notification.show("error");
+            errorLabel.setValue(String.format("Login Failed : %s", e.getMessage()));
+            errorLabel.setVisible(true);
         }
     }
 }
